@@ -16,7 +16,7 @@ spec:
           - group: gateway.networking.k8s.io
             kind: HTTPRoute
         namespaces:
-          from: All
+          from: Same
     - name: https
       port: 443
       protocol: HTTPS

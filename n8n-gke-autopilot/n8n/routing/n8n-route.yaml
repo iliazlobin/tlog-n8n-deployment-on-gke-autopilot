@@ -7,6 +7,7 @@ spec:
   parentRefs:
     - name: external-gateway
       namespace: gateway
+      sectionName: https
   hostnames:
     - "n8n.kube.iliazlobin.com"
   rules:

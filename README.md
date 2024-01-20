@@ -94,11 +94,13 @@ gcloud certificate-manager maps entries create n8n-kube-iliazlobin-com-map-entry
 
 ## N8N Installation to GKE
 This chapter covers a full installation process in a scripted manner:
-* Managed Certificates Maps for enabling HTTPS on endpoint
-* Stateful PostgresQL Database in GKE with volume claims
-* N8N paired up with PostgresQL backend
-* Service endpoints and backend configuration
-* Ingress or Gateway for your choice to expose the service to the world
+* Secrets for PostgreSQL
+* PostgreSQL database with storage volume claims
+* N8N service paired with PostgreSQL
+* Testing / port-forwarding
+* Gateway API backed by Global Application Load Balancer
+* HTTP Routes to the service endpoint
+* SSL/TLS activation (HTTPS + certs)
 * Authentication with IAP
 
 ### Applications and services
@@ -108,18 +110,18 @@ This chapter covers a full installation process in a scripted manner:
 kubectl apply -f n8n-gke-autopilot/n8n/_namespace.yaml
 kubectl get ns
 
-cp -r /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/secrets-template /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/secrets
-# kubectl delete -f /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/secrets
-kubectl apply -f /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/secrets
+cp -r n8n-gke-autopilot/n8n/secrets-template n8n-gke-autopilot/n8n/secrets
+# kubectl delete -f n8n-gke-autopilot/n8n/secrets
+kubectl apply -f n8n-gke-autopilot/n8n/secrets
 kubectl -n n8n get secret
 
-# kubectl delete -f /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/data
-kubectl apply -f /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/data
+# kubectl delete -f n8n-gke-autopilot/n8n/data
+kubectl apply -f n8n-gke-autopilot/n8n/data
 kubectl -n n8n get deployment
 kubectl -n n8n describe deployment postgres
 
-# kubectl delete -f /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/app
-kubectl apply -f /home/izlobin/ws/tlog/240114-K8SN8N/n8n-gke-autopilot/n8n/app
+# kubectl delete -f n8n-gke-autopilot/n8n/app
+kubectl apply -f n8n-gke-autopilot/n8n/app
 kubectl -n n8n get n8n
 kubectl -n n8n describe n8n postgres
 
@@ -265,11 +267,17 @@ kubectl -n n8n logs deployment/n8n
 
 # check load balancer specs
 gcloud compute url-maps list
-gcloud compute url-maps describe k8s2-um-575wx0kh-n8n-n8n-ingress-u4yrlxaw --global
-gcloud compute url-maps describe gkegw1-575w-gateway-external-gateway-41pm92e3m0al --global
+gcloud compute url-maps describe gkegw1-575w-gateway-external-gateway-cm5jpi635k5h --global
 
 # check certificate maps
+gcloud compute target-http-proxies list
 gcloud compute target-https-proxies list
+
+gcloud compute target-http-proxies create http-proxy --url-map=gkegw1-575w-gateway-external-gateway-cm5jpi635k5h
+gcloud compute target-http-proxies describe http-proxy
+
+# gcloud compute target-http-proxies create http-proxy --url-map=gkegw1-575w-gateway-external-gateway-cm5jpi635k5h
+# gcloud compute target-http-proxies delete http-proxy
 
 # check backend service specs
 gcloud compute backend-services list
