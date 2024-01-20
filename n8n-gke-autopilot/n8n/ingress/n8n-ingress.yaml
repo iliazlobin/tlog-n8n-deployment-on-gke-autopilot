@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n-ingress
+  namespace: n8n
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/v1beta1.FrontendConfig: "n8n-frontendconfig"
+    networking.gke.io/managed-certificates: "n8n-cert"
+spec:
+  # defaultBackend:
+  #   service:
+  #     name: my-service
+  #     port:
+  #       number: 8080
+  rules:
+  - host: n8n.iliazlobin.com
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: n8n-service
+            port:
+              number: 5678

@@ -1,0 +1,23 @@
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: n8n-backendpolicy
+  namespace: n8n
+spec:
+  default:
+    timeoutSec: 20
+    # sslPolicy: "modern-ssl-policy"
+    # allowGlobalAccess: true
+    # securityPolicy: example-security-policy
+    # iap:
+    #   enabled: true
+    #   oauth2ClientSecret:
+    #     name: n8n-iap-secret
+    #   clientID: 39392735180-uahdnvcdk1gat4t3nmbtsdujgflrab2f.apps.googleusercontent.com
+    logging:
+      enabled: true
+      sampleRate: 500000
+  targetRef:
+    group: ""
+    kind: Service
+    name: n8n-service

@@ -1,0 +1,13 @@
+# https://cloud.google.com/kubernetes-engine/docs/how-to/configure-gateway-resources
+apiVersion: networking.gke.io/v1
+kind: GCPGatewayPolicy
+metadata:
+  name: external-gateway-policy
+  namespace: gateway
+spec:
+  default:
+    sslPolicy: modern-ssl-policy
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: external-gateway

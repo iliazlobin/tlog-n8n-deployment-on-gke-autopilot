@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: n8n-cert
+  namespace: n8n
+spec:
+  domains:
+    - n8n.iliazlobin.com

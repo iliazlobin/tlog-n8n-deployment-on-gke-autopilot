@@ -1,0 +1,22 @@
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: n8n-healthcheck
+  namespace: n8n
+spec:
+  default:
+    checkIntervalSec: 20
+    timeoutSec: 20
+    healthyThreshold: 1
+    unhealthyThreshold: 2
+    logConfig:
+      enabled: true
+    config:
+      type: HTTP
+      httpHealthCheck:
+        port: 5678
+        requestPath: /healthz
+  targetRef:
+    group: ""
+    kind: Service
+    name: n8n-service
